@@ -47,16 +47,16 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="view-stocks.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Stocks<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#">Add Stock</a>
+                                    <a href="add-stock.php">Add Stock</a>
                                 </li>
                                 <li>
-                                    <a href="#">View Stocks</a>
+                                    <a href="view-stocks.php">View Stocks</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->

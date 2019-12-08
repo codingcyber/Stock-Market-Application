@@ -1,4 +1,12 @@
 <?php
+// CSRF Token Protection
+if(isset($_POST) & !empty($_POST)){
+    print_r($_POST);
+    // PHP Form Validations
+    if(empty($_POST['stock'])){ $errors[] = "Stock Field is Required"; }else{
+        // chekc the symbol in unique with db query (select)
+    }
+}
 include('includes/header.php');
 include('includes/navigation.php');
 ?>
@@ -17,11 +25,20 @@ include('includes/navigation.php');
                     Create a New Stock Here...
                 </div>
                 <div class="panel-body">
+                    <?php
+                        if(!empty($errors)){
+                            echo "<div class='alert alert-danger'>";
+                            foreach ($errors as $error) {
+                                echo "<span class='glyphicon glyphicon-remove'></span>&nbsp;" . $error ."<br>";
+                            }
+                            echo "</div>";
+                        }
+                    ?>
                     <div class="row">
                         <div class="col-lg-12">
                             <form role="form" method="post">
                                 <div class="col-lg-6">
-                                    <input type="hidden" name="csrf_token" value="<?php echo $token; ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php //echo $token; ?>">
                                     <div class="form-group">
                                         <label>Stock Scrip</label>
                                         <input class="form-control" name="stock" placeholder="Enter Stock Scrip Name">
@@ -36,7 +53,7 @@ include('includes/navigation.php');
                                     </div>
                                 </div>
                                 <input type="submit" class="btn btn-primary" value="Submit" />
-                                </form>
+                            </form>
                         </div>
                         <!-- /.col-lg-6 (nested) -->   
                     <!-- /.row (nested) -->
