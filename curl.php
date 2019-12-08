@@ -8,7 +8,7 @@ $curl = curl_init();
 $symbol = "INFY.NS";
 
 curl_setopt_array($curl, array(
-	CURLOPT_URL => "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=$symbol&apikey=$key",
+	CURLOPT_URL => "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=$symbol&apikey=$key&outputsize=full",
 	CURLOPT_RETURNTRANSFER => true,
 	CURLOPT_FOLLOWLOCATION => true,
 	CURLOPT_ENCODING => "",
@@ -38,6 +38,20 @@ echo "</pre>";
 
 
 // we should get all these dates, so that we can get the days information with these dates
+
+$dates = array_keys($array['Time Series (Daily)']);
+
+echo "<pre>";
+print_r($dates);
+echo "</pre>";
+// remove 0.0000 from the output - 2019-10-27, 2005-07-28
+// we can insert the values into database with this foreach loop
+// we should remove the zero values from the output
+foreach ($dates as $date) {
+	echo $date . " ";
+	print_r($array['Time Series (Daily)'][$date]);
+	echo "<br>";
+}
 
 
 
