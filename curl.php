@@ -48,9 +48,11 @@ echo "</pre>";
 // we can insert the values into database with this foreach loop
 // we should remove the zero values from the output
 foreach ($dates as $date) {
-	echo $date . " ";
-	print_r($array['Time Series (Daily)'][$date]);
-	echo "<br>";
+	if($array['Time Series (Daily)'][$date]['1. open'] != '0.0000'){
+		echo $date . " ";
+		print_r($array['Time Series (Daily)'][$date]);
+		echo "<br>";
+	}
 }
 
 
