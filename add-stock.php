@@ -4,7 +4,7 @@ require_once('includes/connect.php');
 session_start();
 // CSRF Token Protection
 if(isset($_POST) & !empty($_POST)){
-    print_r($_POST);
+    //print_r($_POST);
     // PHP Form Validations
     if(empty($_POST['stock'])){ $errors[] = "Stock Field is Required"; }else{
         // chekc the symbol is unique with db query (select)
@@ -106,7 +106,7 @@ if(isset($_POST) & !empty($_POST)){
             if($err){
                 echo "cURL Error :" . $err;
             }else{
-                echo $response;
+                //echo $response;
                 // After that loop through the daily values and insert those values in daily_values table
                 // here we can get the weekly & monthly response and insert into respective tables, will do it in a seperate PHP page
                 $data = json_decode($response, true);
@@ -128,10 +128,12 @@ if(isset($_POST) & !empty($_POST)){
                                             );
 
                             $dailyres = $dailyresult->execute($values) or die(print_r($dailyresult->errorInfo(), true));
-                            echo $date . " Added<br>";
+                            //echo $date . " Added<br>";
+
                         }
                     }
                 }
+                $messages[] = "Stock Added Successfully";
             }
         }
     }
@@ -166,6 +168,15 @@ include('includes/navigation.php');
                             echo "<div class='alert alert-danger'>";
                             foreach ($errors as $error) {
                                 echo "<span class='glyphicon glyphicon-remove'></span>&nbsp;" . $error ."<br>";
+                            }
+                            echo "</div>";
+                        }
+                    ?>
+                    <?php
+                        if(!empty($messages)){
+                            echo "<div class='alert alert-success'>";
+                            foreach ($messages as $message) {
+                                echo "<span class='glyphicon glyphicon-ok'></span>&nbsp;" . $message ."<br>";
                             }
                             echo "</div>";
                         }
