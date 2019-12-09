@@ -1,11 +1,12 @@
 <?php
+require_once('includes/connect.php');
 include('includes/header.php');
 include('includes/navigation.php');
 ?>
     <div id="page-wrapper" style="min-height: 345px;">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">View Stock</h1>
+                <h1 class="page-header">View Stock : <?php echo $_GET['scrip']; ?></h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -14,7 +15,7 @@ include('includes/navigation.php');
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        View Stock : Stock Name
+                        View Stock : <?php echo $_GET['scrip']; ?>
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
@@ -33,16 +34,25 @@ include('includes/navigation.php');
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <?php 
+                                    // we should join 2 tabels
+                                        $sql = "SELECT * FROM stock_daily_values sdv JOIN stocks s ON sdv.stockid=s.id WHERE s.symbol=? ORDER BY trade_date DESC";
+                                        $result = $db->prepare($sql);
+                                        $res = $result->execute(array($_GET['scrip'])) or die(print_r($result->errorInfo(), true));
+                                        $stockvals = $result->fetchAll(PDO::FETCH_ASSOC);
+                                        foreach ($stockvals as $stockval) {
+                                    ?>
                                     <tr>
-                                        <td>1</td>
-                                        <td>Mark</td>
-                                        <td>Otto</td>
-                                        <td>@mdo</td>
-                                        <td>@mdo</td>
-                                        <td>@mdo</td>
-                                        <td>@mdo</td>
-                                        <td>@mdo</td>
+                                        <td><?php echo $stockval['id']; ?></td>
+                                        <td><?php echo $stockval['symbol']; ?></td>
+                                        <td><?php echo $stockval['trade_date']; ?></td>
+                                        <td><?php echo $stockval['price_open']; ?></td>
+                                        <td><?php echo $stockval['price_high']; ?></td>
+                                        <td><?php echo $stockval['price_low']; ?></td>
+                                        <td><?php echo $stockval['price_close']; ?></td>
+                                        <td><?php echo $stockval['volume']; ?></td>
                                     </tr>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         </div>
