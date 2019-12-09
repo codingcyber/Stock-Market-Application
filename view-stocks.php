@@ -47,6 +47,7 @@ include('includes/navigation.php');
         $daysresult = $db->prepare($dayssql);
         $daysres = $daysresult->execute(array($stock['id'])) or die(print_r($daysresult->errorInfo(), true));
         $dayscount = $daysresult->rowCount();
+        $stocklh = $daysresult->fetchAll(PDO::FETCH_ASSOC);
 
         // we should get the first & last records for Start & Current Price
         $sql = "SELECT * FROM stock_daily_values WHERE stockid=? ORDER BY trade_date ASC LIMIT 1";
@@ -59,8 +60,10 @@ include('includes/navigation.php');
         $result->execute(array($stock['id'])) or die(print_r($result->errorInfo(), true));
         $stockcurrentvals = $result->fetch(PDO::FETCH_ASSOC);
 
-        // Select Sql queries for getting All time low & Highs
-
+        // calculating All time low & Highs from full record set
+        $pricelh = array_column($stocklh, 'price_open');
+        $stocklow = $stocklh[array_search(min($pricelh), $pricelh)];
+        $stockhigh = $stocklh[array_search(max($pricelh), $pricelh)];
 ?>
                                 <tr>
                                     <td><?php echo $stock['id']; ?></td>
@@ -74,10 +77,14 @@ include('includes/navigation.php');
                                     <td><?php echo round($stockcurrentvals['price_open'],2); ?>
                                         <br><small><?php echo $stockcurrentvals['trade_date']; ?></small>
                                     </td>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
+                                    <td><?php echo round($stocklow['price_open'],2); ?>
+                                        <br><small><?php echo $stocklow['trade_date']; ?></small>
+                                    </td>
+                                    <td><?php echo round($stockhigh['price_open'],2); ?>
+                                        <br><small><?php echo $stockhigh['trade_date']; ?></small>
+                                    </td>
                                     <td><?php echo $stock['exchange']; ?></td>
-                                    <td>@mdo</td>
+                                    <td><a href="chart.php?scrip=<?php echo $stock['symbol']; ?>">View Chart</td>
                                 </tr>
                                 <?php } ?>
                             </tbody>
