@@ -8,6 +8,13 @@ if(isset($_POST) & !empty($_POST)){
     // PHP Form Validations
     if(empty($_POST['stock'])){ $errors[] = "Stock Field is Required"; }else{
         // chekc the symbol is unique with db query (select)
+        $sql = "SELECT * FROM stocks WHERE symbol=?";
+        $result = $db->prepare($sql);
+        $res = $result->execute(array($_POST['stock'])) or die(print_r($result->errorInfo(), true));
+        $count = $result->rowCount();
+        if($count == 1){
+            $errors[] = "Stock Symbol already exists in database";
+        }
     }
 
     //3. Validate the CSRF Token (CSRF Token Validation & CSRF Token Time Validation)
