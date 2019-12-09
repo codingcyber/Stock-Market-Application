@@ -1,4 +1,6 @@
 <?php
+require_once('includes/config.php');
+require_once('includes/connect.php');
 session_start();
 // CSRF Token Protection
 if(isset($_POST) & !empty($_POST)){
@@ -20,7 +22,7 @@ if(isset($_POST) & !empty($_POST)){
     }
 
     // CSRF Token Time Validation
-    $max_time = 5; // time in seconds
+    $max_time = 60*60*24; // time in seconds
     if(isset($_SESSION['csrf_token_time'])){
         // compare the time with maxtime
         $token_time = $_SESSION['csrf_token_time'];
@@ -35,6 +37,47 @@ if(isset($_POST) & !empty($_POST)){
         // unset the CSRF Tokens
         unset($_SESSION['csrf_token']);
         unset($_SESSION['csrf_token_time']);
+    }
+
+    if(empty($errors)){
+        $curl = curl_init();
+        $symbol = $_POST['stock'].".".$_POST['exchange'];
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.worldtradingdata.com/api/v1/stock?symbol=$symbol&api_token=$token",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 90,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET"
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if($err){
+            echo "cURL Error :" . $err;
+        }
+
+        $name = json_decode($response, true);
+        $companyname = $name['data'][0]['name'];
+
+        // Insert SQL query to insert into stocks table
+        $sql = "INSERT INTO stocks (symbol, name, exchange) VALUES (:symbol, :name, :exchange)";
+        $result = $db->prepare($sql);
+        $values = array(':symbol'   => $_POST['stock'],
+                        ':name'     => $companyname,
+                        ':exchange' => $_POST['exchange']
+                        );
+        $res = $result->execute($values) or die(print_r($result->errorInfo(), true));
+        if($res){
+            // get the last insert id and get the daily values of this stock and insert to stock_daily_values table
+            echo "Insert into stock_daily_values table";
+        }
     }
 }
 //1. Create CSRF Token
