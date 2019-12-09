@@ -83,7 +83,56 @@ if(isset($_POST) & !empty($_POST)){
         $res = $result->execute($values) or die(print_r($result->errorInfo(), true));
         if($res){
             // get the last insert id and get the daily values of this stock and insert to stock_daily_values table
-            echo "Insert into stock_daily_values table";
+            $stockid = $db->lastInsertID();
+            // geting the response from the API
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=$symbol&apikey=$key&outputsize=full",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 90,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET"
+            ));
+
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+
+            curl_close($curl);
+
+            if($err){
+                echo "cURL Error :" . $err;
+            }else{
+                echo $response;
+                // After that loop through the daily values and insert those values in daily_values table
+                // here we can get the weekly & monthly response and insert into respective tables, will do it in a seperate PHP page
+                $data = json_decode($response, true);
+                $dates = array_keys($data['Time Series (Daily)']);
+                foreach ($dates as $date) {
+                    if(isset($data['Time Series (Daily)'][$date]) & !empty($data['Time Series (Daily)'][$date])){
+                        if($data['Time Series (Daily)'][$date]['1. open'] != '0.0000'){
+
+                            // Insert into stock_daily_values table
+                            $dailysql = "INSERT INTO stock_daily_values (stockid, price_open, price_high, price_low, price_close, volume, trade_date) VALUES (:stockid, :price_open, :price_high, :price_low, :price_close, :volume, :trade_date)";
+                            $dailyresult = $db->prepare($dailysql);
+                            $values = array(':stockid'      => $stockid,
+                                            ':price_open'   => $data['Time Series (Daily)'][$date]['1. open'],
+                                            ':price_high'   => $data['Time Series (Daily)'][$date]['2. high'],
+                                            ':price_low'    => $data['Time Series (Daily)'][$date]['3. low'],
+                                            ':price_close'  => $data['Time Series (Daily)'][$date]['4. close'],
+                                            ':volume'       => $data['Time Series (Daily)'][$date]['5. volume'],
+                                            ':trade_date'   => $date
+                                            );
+
+                            $dailyres = $dailyresult->execute($values) or die(print_r($dailyresult->errorInfo(), true));
+                            echo $date . " Added<br>";
+                        }
+                    }
+                }
+            }
         }
     }
 }
