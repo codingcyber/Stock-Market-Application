@@ -40,3 +40,17 @@ stock_monthly_values
 -volume
 -trade_date
 -timestamp
+
+stock_cache_values
+-id
+-stockid
+-days
+-startprice
+-startdate
+-currentprice
+-currentdate
+-atl_price
+-atl_date
+-ath_price
+-ath_date
+-timestamp
