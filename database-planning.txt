@@ -54,3 +54,16 @@ stock_cache_values
 -ath_price
 -ath_date
 -timestamp
+
+watchlist
+-id
+-name
+-created
+-updated
+
+watchlist_stocks
+-id
+-watchlistid
+-stockid
+-created
+-updated

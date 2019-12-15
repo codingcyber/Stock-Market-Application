@@ -67,6 +67,18 @@
                         <li>
                             <a href="#"><i class="fa fa-table fa-fw"></i> Get New Values</a>
                         </li>
+                        <li>
+                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Watchlist<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="add-watchlist.php">Add Watchlist</a>
+                                </li>
+                                <li>
+                                    <a href="view-watchlists.php">View Watchlists</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
