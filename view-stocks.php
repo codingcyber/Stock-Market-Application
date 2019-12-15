@@ -36,52 +36,35 @@ include('includes/navigation.php');
                                 </tr>
                             </thead>
                             <tbody>
-<?php
-    $sql = "SELECT * FROM stocks";
-    $result = $db->prepare($sql);
-    $result->execute() or die(print_r($result->errorInfo(), true));
-    $stocks = $result->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($stocks as $stock) {
-        // We can get the number of days by counting the number of rows in db
-        $dayssql = "SELECT * FROM stock_daily_values WHERE stockid=?";
-        $daysresult = $db->prepare($dayssql);
-        $daysres = $daysresult->execute(array($stock['id'])) or die(print_r($daysresult->errorInfo(), true));
-        $dayscount = $daysresult->rowCount();
-        $stocklh = $daysresult->fetchAll(PDO::FETCH_ASSOC);
-
-        // we should get the first & last records for Start & Current Price
-        $sql = "SELECT * FROM stock_daily_values WHERE stockid=? ORDER BY trade_date ASC LIMIT 1";
-        $result = $db->prepare($sql);
-        $result->execute(array($stock['id'])) or die(print_r($result->errorInfo(), true));
-        $stockstartvals = $result->fetch(PDO::FETCH_ASSOC);
-
-        $sql = "SELECT * FROM stock_daily_values WHERE stockid=? ORDER BY trade_date DESC LIMIT 1";
-        $result = $db->prepare($sql);
-        $result->execute(array($stock['id'])) or die(print_r($result->errorInfo(), true));
-        $stockcurrentvals = $result->fetch(PDO::FETCH_ASSOC);
-
-        // calculating All time low & Highs from full record set
-        $pricelh = array_column($stocklh, 'price_open');
-        $stocklow = $stocklh[array_search(min($pricelh), $pricelh)];
-        $stockhigh = $stocklh[array_search(max($pricelh), $pricelh)];
-?>
+                            <?php
+                                $sql = "SELECT * FROM stocks";
+                                $result = $db->prepare($sql);
+                                $result->execute() or die(print_r($result->errorInfo(), true));
+                                $stocks = $result->fetchAll(PDO::FETCH_ASSOC);
+                                foreach ($stocks as $stock) {
+                                    // We can get the number of days by counting the number of rows in db
+                                    $sql = "SELECT * FROM stock_cache_values WHERE stockid=?";
+                                    $result = $db->prepare($sql);
+                                    $res = $result->execute(array($stock['id'])) or die(print_r($result->errorInfo(), true));
+                                    $stockvals = $result->fetch(PDO::FETCH_ASSOC);
+                            ?>
                                 <tr>
                                     <td><?php echo $stock['id']; ?></td>
                                     <td><a href="view-stock.php?scrip=<?php echo $stock['symbol']; ?>"><?php echo $stock['symbol']; ?></a><br><small><?php echo $stock['name']; ?></small>
                                     </td>
                                     <td>Otto</td>
-                                    <td><?php echo $dayscount; ?></td>
-                                    <td><?php echo round($stockstartvals['price_open'],2); ?>
-                                        <br><small><?php echo $stockstartvals['trade_date']; ?></small>
+                                    <td><?php echo $stockvals['days']; ?></td>
+                                    <td><?php echo round($stockvals['startprice'],2); ?>
+                                        <br><small><?php echo $stockvals['startdate']; ?></small>
                                     </td>
-                                    <td><?php echo round($stockcurrentvals['price_open'],2); ?>
-                                        <br><small><?php echo $stockcurrentvals['trade_date']; ?></small>
+                                    <td><?php echo round($stockvals['currentprice'],2); ?>
+                                        <br><small><?php echo $stockvals['currentdate']; ?></small>
                                     </td>
-                                    <td><?php echo round($stocklow['price_open'],2); ?>
-                                        <br><small><?php echo $stocklow['trade_date']; ?></small>
+                                    <td><?php echo round($stockvals['atl_price'],2); ?>
+                                        <br><small><?php echo $stockvals['atl_date']; ?></small>
                                     </td>
-                                    <td><?php echo round($stockhigh['price_open'],2); ?>
-                                        <br><small><?php echo $stockhigh['trade_date']; ?></small>
+                                    <td><?php echo round($stockvals['ath_price'],2); ?>
+                                        <br><small><?php echo $stockvals['ath_date']; ?></small>
                                     </td>
                                     <td><?php echo $stock['exchange']; ?></td>
                                     <td><a href="chart.php?scrip=<?php echo $stock['symbol']; ?>">View Chart</td>
