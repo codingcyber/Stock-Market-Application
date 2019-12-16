@@ -43,7 +43,7 @@ if(isset($_POST) & !empty($_POST)){
         if($res){
             $messages[] = "Watchlist Added Successfully";
         }else{
-            $messages[] = "Failed to Add Watchlist";
+            $errors[] = "Failed to Add Watchlist";
         }
     }
 }
