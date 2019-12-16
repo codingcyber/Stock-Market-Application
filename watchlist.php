@@ -56,11 +56,16 @@ $_SESSION['csrf_token_time'] = time();
 
 include('includes/header.php');
 include('includes/navigation.php');
+
+$sql = "SELECT * FROM watchlist WHERE id=?";
+$result = $db->prepare($sql);
+$result->execute(array($_GET['id'])) or die(print_r($result->errorInfo(), true));
+$watchlist = $result->fetch(PDO::FETCH_ASSOC);
 ?>
 <div id="page-wrapper" style="min-height: 345px;">
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header">View Watchlist</h1>
+            <h1 class="page-header">View Watchlist : <?php echo $watchlist['name']; ?></h1>
         </div>
         <!-- /.col-lg-12 -->
     </div>
