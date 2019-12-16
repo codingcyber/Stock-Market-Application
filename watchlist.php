@@ -128,7 +128,7 @@ include('includes/navigation.php');
         </div>
         
         <?php
-            $sql = "SELECT * FROM stocks AS s JOIN watchlist_stocks AS ws ON s.id=ws.stockid WHERE ws.watchlistid=?";
+            $sql = "SELECT s.id, s.name, s.symbol, s.exchange FROM stocks AS s JOIN watchlist_stocks AS ws ON s.id=ws.stockid WHERE ws.watchlistid=?";
             //$sql = "SELECT * FROM stocks";
             $result = $db->prepare($sql);
             $result->execute(array($_GET['id'])) or die(print_r($result->errorInfo(), true));
@@ -170,7 +170,7 @@ include('includes/navigation.php');
                                     $stockvals = $result->fetch(PDO::FETCH_ASSOC);
                             ?>
                                 <tr>
-                                    <td><?php echo $stock['id']; ?></td>
+                                    <td><?php echo $stock['id']; ?> <a href="del-watchlist-stock.php?stockid=<?php echo $stock['id']; ?>&watchlistid=<?php echo $_GET['id']; ?>">x</a></td>
                                     <td><a href="view-stock.php?scrip=<?php echo $stock['symbol']; ?>"><?php echo $stock['symbol']; ?></a><br><small><?php echo $stock['name']; ?></small>
                                     </td>
                                     <td>Otto</td>
